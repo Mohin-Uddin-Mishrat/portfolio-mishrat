@@ -46,16 +46,56 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
     tap: { scale: 0.98 },
   };
 
+  // Skill Bar Component
+  const SkillBar: React.FC<{
+    name: string;
+    percent: number;
+    color: string;
+    delay?: number;
+  }> = ({ name, percent, color, delay = 0 }) => {
+    const barRef = useRef(null);
+    const isInViewBar = useInView(barRef, { once: true, margin: "-50px" });
+
+    return (
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-gray-300 text-xs uppercase font-medium">{name}</span>
+          <span className="text-gray-400 text-xs">{percent}%</span>
+        </div>
+        <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
+          <motion.div
+            ref={barRef}
+            initial={{ width: 0 }}
+            animate={isInViewBar ? { width: `${percent}%` } : {}}
+            transition={{
+              duration: 1.2,
+              ease: "easeOut",
+              delay: delay * 0.1,
+            }}
+            className={`h-full ${color} rounded-full`}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section
       ref={ref}
       className={`relative overflow-hidden bg-black py-16 md:py-24 ${className}`}
     >
       <div className="container mx-auto px-4">
-        {/* Services Row (Same as before) */}
+        {/* Services Row */}
         <motion.div
           initial="hidden"
           animate={controls}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         >
           {[
@@ -74,7 +114,6 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
                 variants={directionalVariants}
                 whileHover="hover"
                 whileTap="tap"
-                animate={cardHoverVariants}
                 className="group relative p-6 rounded-lg border border-gray-800 bg-black hover:border-pink-500/30 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center text-center space-y-3"
               >
                 <div className="text-pink-500 text-3xl group-hover:text-pink-400 transition-colors">
@@ -92,7 +131,14 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
         <motion.div
           initial="hidden"
           animate={controls}
-          className="grid grid-cols-1 lg:grid-cols-5 gap-6"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+          className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-12"
         >
           {/* BIG CARD — LEFT SIDE */}
           <motion.div
@@ -100,7 +146,6 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
             variants={directionalVariants}
             whileHover="hover"
             whileTap="tap"
-            animate={cardHoverVariants}
             className="group relative col-span-1 lg:col-span-2 p-8 rounded-xl bg-gradient-to-br from-gray-900 via-pink-900 to-purple-900 border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 flex flex-col justify-between"
           >
             <div className="flex items-start space-x-4">
@@ -118,7 +163,17 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
           </motion.div>
 
           {/* SMALL STAT CARDS — RIGHT SIDE (2x2 GRID) */}
-          <div className="col-span-1 lg:col-span-3 grid grid-cols-2 gap-6">
+          <motion.div 
+            animate={controls}
+            variants={{
+              visible: {
+                transition: {
+                  staggerChildren: 0.1,
+                },
+              },
+            }}
+            className="col-span-1 lg:col-span-3 grid grid-cols-2 gap-6"
+          >
             {[
               { number: "20k+", label: "Our Project Complete", icon: <FaStar /> },
               { number: "10k+", label: "Our Natural Products", icon: <FaUsers /> },
@@ -135,7 +190,6 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
                   variants={directionalVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  animate={cardHoverVariants}
                   className="group relative p-6 rounded-xl bg-gray-900 border border-gray-800 hover:border-pink-500/30 transition-all duration-300 flex flex-col items-center justify-center text-center space-y-2"
                 >
                   <div className="text-pink-500 text-xl mb-2">{stat.icon}</div>
@@ -145,6 +199,44 @@ const StatsSection: React.FC<StatsSectionProps> = ({ className = '' }) => {
                 </motion.div>
               );
             })}
+          </motion.div>
+        </motion.div>
+
+        {/* NEW: SKILLS SECTION */}
+        <motion.div
+          initial="hidden"
+          animate={controls}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-12 border-t border-gray-800"
+        >
+          {/* DESIGN SKILLS */}
+          <div>
+            <h3 className="text-white font-bold text-xl mb-6 flex items-center">
+              Design Skill
+              <span className="ml-4 h-0.5 w-12 bg-gray-600"></span>
+            </h3>
+            <SkillBar name="Photoshop" percent={100} color="bg-pink-500" delay={0} />
+            <SkillBar name="Figma" percent={95} color="bg-pink-500" delay={1} />
+            <SkillBar name="Adobe XD" percent={60} color="bg-pink-500" delay={2} />
+            <SkillBar name="Adobe Illustrator" percent={70} color="bg-pink-500" delay={3} />
+          </div>
+
+          {/* DEVELOPMENT SKILLS */}
+          <div>
+            <h3 className="text-white font-bold text-xl mb-6 flex items-center">
+              Development Skill
+              <span className="ml-4 h-0.5 w-12 bg-gray-600"></span>
+            </h3>
+            <SkillBar name="HTML" percent={100} color="bg-pink-500" delay={0} />
+            <SkillBar name="CSS" percent={95} color="bg-pink-500" delay={1} />
+            <SkillBar name="Javascript" percent={60} color="bg-pink-500" delay={2} />
+            <SkillBar name="Wordpress" percent={70} color="bg-pink-500" delay={3} />
           </div>
         </motion.div>
       </div>
